@@ -189,6 +189,34 @@ This project is open source and available under the [MIT License](LICENSE).
 - **React Leaflet** community for mapping components
 - **Vite** team for the excellent build tool
 
+## 📊 Presentation
+
+### Hackathon Presentation
+This project was developed for the **Hackstronauts** hackathon with a focus on creating an accessible and educational earthquake visualization tool.
+
+#### 🎯 Key Presentation Points
+- **Problem Statement**: Need for accessible, real-time earthquake data visualization
+- **Solution**: Modern web app with educational content and responsive design
+- **Technology Stack**: React 19, Leaflet, USGS API integration
+- **User Experience**: Three-column desktop layout, mobile-first responsive design
+- **Educational Value**: Built-in learning modules about earthquakes and safety
+- **Real-time Data**: Live USGS earthquake feed integration
+- **Accessibility**: Touch-friendly controls, proper contrast ratios
+
+#### 📋 Demo Flow
+1. **Interactive Map**: Show real-time earthquake visualization with filtering
+2. **Educational Content**: Demonstrate learning modules and safety information
+3. **Responsive Design**: Show mobile, tablet, and desktop layouts
+4. **Data Controls**: Time range and magnitude filtering capabilities
+5. **Statistics Panel**: Live earthquake statistics and insights
+
+#### 🎨 Visual Highlights
+- Modern glassmorphism UI design
+- Gradient typography and smooth animations
+- Color-coded earthquake depth visualization
+- Size-scaled magnitude representation
+- Professional three-column desktop layout
+
 ## 📞 Support
 
 For support, questions, or feature requests:
