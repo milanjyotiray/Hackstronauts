@@ -224,13 +224,14 @@ body {
     position: relative;
     height: 100%;
     min-width: 0;
-    display: block;
+    display: block !important;
   }
   
   .map-container {
     height: 100% !important;
     width: 100% !important;
     z-index: 1 !important;
+    display: block !important;
   }
   
   .stats-panel {
@@ -804,10 +805,11 @@ body {
   flex: 1;
   height: calc(100vh - 80px) !important;
   width: 100% !important;
-  position: relative;
   border-radius: 0;
   overflow: hidden;
-  z-index: 1;
+  background: #f8fafc;
+  position: relative;
+  display: block !important;
 }
 
 .leaflet-container {

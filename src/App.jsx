@@ -225,13 +225,14 @@ export default function App() {
               </div>
             </div>
 
-            {/* Interactive Map */}
+            {/* Map Section */}
             <div className="map-section">
               <MapContainer
                 center={[20, 0]}
                 zoom={2}
                 className="map-container"
                 style={{ height: '100%', width: '100%', zIndex: 1 }}
+                key="earthquake-map"
                 whenReady={() => {
                   // Map is ready
                 }}
