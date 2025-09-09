@@ -1,10 +1,10 @@
 /* Time Slider Component Styles */
 .time-slider-container {
-  margin-top: 20px;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.9);
+  margin-top: 16px;
+  padding: 16px;
+  background: #ffffff;
   border-radius: 8px;
-  border: 1px solid #eee;
+  border: 1px solid #e5e7eb;
 }
 
 .time-slider-container h4 {
@@ -24,25 +24,25 @@
 
 .time-btn {
   padding: 8px 12px;
-  border: 1px solid #ddd;
-  background: white;
-  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 0.85rem;
-  font-weight: 500;
-  transition: all 0.2s;
+  font-weight: 600;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
   text-align: center;
 }
 
 .time-btn:hover {
-  background: rgba(74, 144, 226, 0.1);
-  border-color: #4a90e2;
+  background: #f3f4f6;
+  border-color: #9ca3af;
 }
 
 .time-btn.active {
-  background: #4a90e2;
-  color: white;
-  border-color: #4a90e2;
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
 }
 
 .time-btn:disabled {
@@ -58,24 +58,24 @@
 .custom-btn {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid #ddd;
-  background: white;
-  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 0.85rem;
-  font-weight: 500;
-  transition: all 0.2s;
+  font-weight: 600;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .custom-btn:hover {
-  background: rgba(255, 193, 7, 0.1);
-  border-color: #ffc107;
+  background: #f3f4f6;
+  border-color: #9ca3af;
 }
 
 .custom-btn.active {
-  background: #ffc107;
-  color: #333;
-  border-color: #ffc107;
+  background: #f59e0b;
+  color: #ffffff;
+  border-color: #d97706;
 }
 
 .custom-btn:disabled {
@@ -85,10 +85,10 @@
 
 .custom-date-input {
   margin-top: 10px;
-  padding: 10px;
-  background: rgba(255, 193, 7, 0.05);
-  border-radius: 4px;
-  border: 1px solid rgba(255, 193, 7, 0.3);
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
 }
 
 .custom-date-input label {
@@ -101,16 +101,16 @@
 
 .date-input {
   width: 100%;
-  padding: 6px 8px;
-  border: 1px solid #ddd;
-  border-radius: 3px;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   font-size: 0.85rem;
 }
 
 .date-input:focus {
   outline: none;
-  border-color: #ffc107;
-  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
 
 .custom-date-input small {
@@ -125,11 +125,11 @@
 .selected-info {
   display: flex;
   align-items: center;
-  padding: 8px 10px;
-  background: rgba(74, 144, 226, 0.1);
-  border-radius: 4px;
+  padding: 10px 12px;
+  background: #f3f4f6;
+  border-radius: 6px;
   font-size: 0.8rem;
-  color: #333;
+  color: #374151;
 }
 
 .info-icon {

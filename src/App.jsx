@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import './modern-styles.css';
+import './styles.css';
 import EducationPanel from './components/EducationPanel';
 import TimeSlider from './components/TimeSlider';
 
@@ -10,10 +10,9 @@ export default function App() {
   const [timeframe, setTimeframe] = useState("all_day");
   const [minMag, setMinMag] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [_error, setError] = useState(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [showControls, setShowControls] = useState(false);
+  const [error, setError] = useState(null);
   const [activeSection, setActiveSection] = useState('map');
+  const [showEducation, setShowEducation] = useState(false);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -38,279 +37,231 @@ export default function App() {
     fetchData();
   }, [fetchData]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-
-  // Get depth color based on depth in km
   const getDepthColor = (depth) => {
-    if (depth > 100) return "#ff4444"; // red
-    if (depth > 50) return "#ffbb33";  // orange
-    return "#00C851";                   // green
+    if (depth > 100) return "#dc2626"; // red
+    if (depth > 50) return "#f59e0b";  // orange
+    return "#10b981";                   // green
   };
 
+  const filteredEarthquakes = earthquakes.filter(eq => eq.properties.mag >= minMag);
+  const maxMagnitude = earthquakes.length > 0 ? Math.max(...earthquakes.map(eq => eq.properties.mag)) : 0;
+  const significantCount = earthquakes.filter(eq => eq.properties.mag >= 4.0).length;
+
   return (
-    <div className="app-container">
+    <div className="app">
       {/* Header */}
-      <header className="app-header">
+      <header className="header">
         <div className="header-content">
           <div className="logo">
             <span className="logo-icon">🌍</span>
             <h1>SeismoScope</h1>
+            <span className="tagline">Real-time Earthquake Monitoring</span>
           </div>
-          <div className="header-right">
-            <nav className="nav-links">
-              <button 
-                className={`nav-link ${activeSection === 'map' ? 'active' : ''}`}
-                onClick={() => setActiveSection('map')}
-              >
-                🗺️ Map
-              </button>
-              <button 
-                className={`nav-link ${activeSection === 'education' ? 'active' : ''}`}
-                onClick={() => setActiveSection('education')}
-              >
-                📚 Education
-              </button>
-              <button 
-                className={`nav-link ${activeSection === 'data' ? 'active' : ''}`}
-                onClick={() => setActiveSection('data')}
-              >
-                📊 Data
-              </button>
-            </nav>
-          </div>
-          <button 
-            className="mobile-menu-btn"
-            onClick={() => setShowControls(!showControls)}
-            aria-label="Toggle controls"
-          >
-            ☰
-          </button>
+          <nav className="nav-links">
+            <button 
+              className={`nav-link ${activeSection === 'map' ? 'active' : ''}`}
+              onClick={() => setActiveSection('map')}
+            >
+              🗺️ Map
+            </button>
+            <button 
+              className={`nav-link ${activeSection === 'education' ? 'active' : ''}`}
+              onClick={() => setActiveSection('education')}
+            >
+              📚 Education
+            </button>
+            <button 
+              className={`nav-link ${activeSection === 'data' ? 'active' : ''}`}
+              onClick={() => setActiveSection('data')}
+            >
+              📊 Data
+            </button>
+          </nav>
         </div>
       </header>
 
-      {/* Mobile Menu */}
-      <div className={`mobile-menu ${isMobile ? (showControls ? 'mobile-show' : 'mobile-hide') : ''}`}>
-        <div className="mobile-header">
-          <h3>Navigation</h3>
-          <button 
-            className="close-btn"
-            onClick={() => setShowControls(false)}
-          >
-            ✕
-          </button>
-        </div>
-        <nav className="mobile-nav">
-          <button 
-            className={`mobile-nav-btn ${activeSection === 'map' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveSection('map');
-              setShowControls(false);
-            }}
-          >
-            🗺️ Interactive Map
-          </button>
-          <button 
-            className={`mobile-nav-btn ${activeSection === 'education' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveSection('education');
-              setShowControls(false);
-            }}
-          >
-            📚 Education Center
-          </button>
-          <button 
-            className={`mobile-nav-btn ${activeSection === 'data' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveSection('data');
-              setShowControls(false);
-            }}
-          >
-            📊 Data & Controls
-          </button>
-        </nav>
-      </div>
-
-      {/* Main Content Area */}
-      <div className="main-content">
-
-        {activeSection === 'education' && (
-          <div className="education-section">
-            <EducationPanel 
-              earthquakes={earthquakes}
-              isVisible={true}
-              onToggle={() => {}}
-            />
+      {/* Main Content */}
+      {activeSection === 'map' && (
+        <div className="map-fullscreen">
+          {/* Floating Controls */}
+          <div className="floating-controls">
+            <div className="control-group">
+              <select
+                value={timeframe}
+                onChange={(e) => setTimeframe(e.target.value)}
+                className="control-select"
+              >
+                <option value="all_hour">Past Hour</option>
+                <option value="all_day">Past Day</option>
+                <option value="all_week">Past Week</option>
+                <option value="all_month">Past Month</option>
+              </select>
+              
+              <div className="magnitude-control">
+                <label>Mag: {minMag.toFixed(1)}</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="8"
+                  step="0.1"
+                  value={minMag}
+                  onChange={(e) => setMinMag(parseFloat(e.target.value))}
+                  className="control-slider"
+                />
+              </div>
+              
+              <button 
+                onClick={fetchData} 
+                className="control-btn" 
+                disabled={isLoading}
+              >
+                {isLoading ? '⟳' : '🔄'}
+              </button>
+            </div>
           </div>
-        )}
 
-        {activeSection === 'data' && (
-          <div className="data-section">
+          {/* Floating Legend */}
+          <div className="floating-legend">
+            <h4>Depth</h4>
+            <div className="legend-item">
+              <span className="legend-dot shallow"></span>
+              <span>0-50km</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-dot intermediate"></span>
+              <span>50-100km</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-dot deep"></span>
+              <span>100+km</span>
+            </div>
+          </div>
+
+          {/* Floating Stats */}
+          <div className="floating-stats">
+            <div className="stat-item">
+              <span className="stat-number">{earthquakes.length}</span>
+              <span className="stat-label">Total</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number">{filteredEarthquakes.length}</span>
+              <span className="stat-label">Filtered</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number">{maxMagnitude.toFixed(1)}</span>
+              <span className="stat-label">Max Mag</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number">{significantCount}</span>
+              <span className="stat-label">≥4.0</span>
+            </div>
+          </div>
+
+          {/* Full Screen Map */}
+          <div className="map-container-full">
+            {error && (
+              <div className="error-message">
+                {error}
+              </div>
+            )}
+            
+            <MapContainer
+              center={[20, 0]}
+              zoom={2}
+              className="map-full"
+              style={{ height: '100%', width: '100%' }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              {filteredEarthquakes.map((eq) => {
+                const [lng, lat, depth] = eq.geometry.coordinates;
+                const { mag, place, time } = eq.properties;
+                const color = getDepthColor(depth);
+                const radius = Math.max(3, mag * 3);
+                
+                return (
+                  <CircleMarker
+                    key={eq.id}
+                    center={[lat, lng]}
+                    radius={radius}
+                    pathOptions={{ 
+                      color: color, 
+                      fillColor: color, 
+                      fillOpacity: 0.7,
+                      weight: 2
+                    }}
+                  >
+                    <Popup>
+                      <div className="popup-content">
+                        <h4>{place}</h4>
+                        <p><strong>Magnitude:</strong> {mag}</p>
+                        <p><strong>Depth:</strong> {depth} km</p>
+                        <p><strong>Time:</strong> {new Date(time).toLocaleString()}</p>
+                      </div>
+                    </Popup>
+                  </CircleMarker>
+                );
+              })}
+            </MapContainer>
+          </div>
+        </div>
+      )}
+
+      {/* Education Section */}
+      {activeSection === 'education' && (
+        <div className="education-section">
+          <EducationPanel 
+            earthquakes={earthquakes}
+            isVisible={true}
+            onToggle={() => setShowEducation(!showEducation)}
+          />
+        </div>
+      )}
+
+      {/* Data Section */}
+      {activeSection === 'data' && (
+        <div className="data-section">
+          <div className="data-container">
             <div className="data-controls">
+              <h2>Advanced Controls</h2>
               <TimeSlider 
                 onTimeRangeChange={(range) => setTimeframe(range)}
                 isLoading={isLoading}
               />
             </div>
-          </div>
-        )}
-
-        {activeSection === 'map' && (
-          <>
-            {/* Controls Panel */}
-            <div className="controls-panel">
-              <h2>Earthquake Monitor</h2>
-              <div className="control-group">
-                <div className="form-group">
-                  <label htmlFor="timeframe">📅 Time Range</label>
-                  <select
-                    id="timeframe"
-                    value={timeframe}
-                    onChange={(e) => setTimeframe(e.target.value)}
-                    className="form-control"
-                  >
-                    <option value="all_hour">Past Hour</option>
-                    <option value="all_day">Past Day</option>
-                    <option value="all_week">Past Week</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="minMag">📊 Min Magnitude</label>
-                  <div className="magnitude-input">
-                    <input
-                      id="minMag"
-                      type="range"
-                      min="0"
-                      max="8"
-                      step="0.1"
-                      value={minMag}
-                      onChange={(e) => setMinMag(parseFloat(e.target.value))}
-                      className="magnitude-slider"
-                    />
-                    <span className="magnitude-value">{minMag.toFixed(1)}</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={fetchData}
-                  disabled={isLoading}
-                  className="btn"
-                >
-                  {isLoading ? '⏳ Loading...' : '🔄 Update Data'}
-                </button>
-              </div>
-
-              {/* Legend */}
-              <div className="legend">
-                <h4>Depth (km)</h4>
-                <div className="legend-item">
-                  <span className="legend-color shallow"></span>
-                  <span>0-50 km (Shallow)</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color intermediate"></span>
-                  <span>50-100 km (Intermediate)</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color deep"></span>
-                  <span>100+ km (Deep)</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Map Section */}
-            <div className="map-section">
-              <MapContainer
-                center={[20, 0]}
-                zoom={2}
-                className="map-container"
-                style={{ height: '100%', width: '100%', zIndex: 1 }}
-                key="earthquake-map"
-                whenReady={() => {
-                  // Map is ready
-                }}
-              >
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                />
-                
-                {!isLoading && earthquakes
-                  .filter((eq) => eq.properties.mag >= minMag)
-                  .map((eq) => {
-                    if (!eq.geometry || !eq.geometry.coordinates) return null;
-                    
-                    const [lon, lat, depth] = eq.geometry.coordinates;
-                    const mag = eq.properties.mag;
-                    const color = getDepthColor(depth);
-
-                    return (
-                      <CircleMarker
-                        key={eq.id}
-                        center={[lat, lon]}
-                        radius={Math.max(mag * 3, 4)}
-                        pathOptions={{
-                          fillColor: color,
-                          color: "#000",
-                          weight: 1,
-                          fillOpacity: 0.7
-                        }}
-                      >
-                        <Popup>
-                          <div style={{ minWidth: '200px' }}>
-                            <h4 style={{ margin: '0 0 10px 0', color: '#333' }}>
-                              {eq.properties.place}
-                            </h4>
-                            <p><strong>Magnitude:</strong> {mag}</p>
-                            <p><strong>Depth:</strong> {depth} km</p>
-                            <p><strong>Time:</strong> {new Date(eq.properties.time).toLocaleString()}</p>
-                            {eq.properties.tsunami && <p style={{ color: 'red' }}><strong>⚠️ Tsunami Alert</strong></p>}
-                          </div>
-                        </Popup>
-                      </CircleMarker>
-                    );
-                  })}
-              </MapContainer>
-            </div>
             
-            {/* Statistics Panel */}
-            <div className="stats-panel">
-              <h4>Live Statistics</h4>
-              <div className="stats-grid">
-                <div className="stat-item">
-                  <span className="stat-number">{earthquakes.length}</span>
-                  <span className="stat-label">Total Earthquakes</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-number">{earthquakes.filter(eq => eq.properties.mag >= minMag).length}</span>
-                  <span className="stat-label">Filtered Results</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-number">{earthquakes.length > 0 ? Math.max(...earthquakes.map(eq => eq.properties.mag)).toFixed(1) : '0'}</span>
-                  <span className="stat-label">Largest Magnitude</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-number">{earthquakes.filter(eq => eq.properties.mag >= 4.0).length}</span>
-                  <span className="stat-label">Significant (≥4.0)</span>
-                </div>
+            <div className="data-table">
+              <h2>Earthquake Data Table</h2>
+              <div className="table-container">
+                <table className="earthquake-table">
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Location</th>
+                      <th>Magnitude</th>
+                      <th>Depth (km)</th>
+                      <th>Coordinates</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredEarthquakes.slice(0, 50).map((eq) => (
+                      <tr key={eq.id}>
+                        <td>{new Date(eq.properties.time).toLocaleString()}</td>
+                        <td>{eq.properties.place}</td>
+                        <td className="magnitude">{eq.properties.mag}</td>
+                        <td>{eq.geometry.coordinates[2]}</td>
+                        <td>
+                          {eq.geometry.coordinates[1].toFixed(3)}, {eq.geometry.coordinates[0].toFixed(3)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
-          </>
-        )}
-      </div>
-
-      {/* Loading Overlay */}
-      {isLoading && (
-        <div className="loading-overlay">
-          <div className="loading-spinner"></div>
-          <p>Loading earthquake data...</p>
+          </div>
         </div>
       )}
     </div>
